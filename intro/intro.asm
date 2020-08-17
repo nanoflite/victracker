@@ -50,7 +50,10 @@ ROWTIME		EQU	LINETIME_PAL
 ;the time to setting the next interrupt (PAL)
 COMPTIME	EQU	30+71
 
+; -DPACKAGE="victracker" -DVERSION="2.0" -DRELDATE="2004-10-02" -DRELYEAR="2004-10-02" -DVERSION_MAJOR="2.0" -DVERSION_MINOR="2.0"
 
+RELDATE EQU "2020-06-09"
+VERSION EQU "2.0"
 
 ;Macro to enable next interrupt within this one
 	MAC	FORK

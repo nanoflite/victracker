@@ -89,7 +89,7 @@ predist_bin::
 	rm -rf $(DISTDIR_BIN)
 	mkdir $(DISTDIR_BIN)
 	cp victracker.prg $(DISTDIR_BIN)
-	cp $(DISTNAME).tar.gz $(DISTDIR_BIN)/vt$(VERSION)-src.tar.gz
+	# cp $(DISTNAME).tar.gz $(DISTDIR_BIN)/vt$(VERSION)-src.tar.gz
 	cp examples/djungel-zagor.vt $(DISTDIR_BIN)
 	cp examples/djungel-zagor_runner.prg $(DISTDIR_BIN)/djungel-zagor.p.prg
 	cp examples/blippblopp.vt $(DISTDIR_BIN)
@@ -109,7 +109,7 @@ dist_d64::
 	utils/makedisk.pl -o $(DISTNAME).d64 -N "VICTRACKER $(VERSION),T.L.R"
 	utils/makedisk.pl -o $(DISTNAME).d64 -w "----------------,d"
 	utils/makedisk.pl -o $(DISTNAME).d64 -w "VICTRACKER,p" $(DISTDIR_BIN)/victracker.prg
-	utils/makedisk.pl -o $(DISTNAME).d64 -w "VT$(VERSION)-SRC.TAR.GZ,p" $(DISTDIR_BIN)/vt$(VERSION)-src.tar.gz
+	# utils/makedisk.pl -o $(DISTNAME).d64 -w "VT$(VERSION)-SRC.TAR.GZ,p" $(DISTDIR_BIN)/vt$(VERSION)-src.tar.gz
 	utils/makedisk.pl -o $(DISTNAME).d64 -w "----------------,d"
 	utils/makedisk.pl -o $(DISTNAME).d64 -w "DJUNGEL-ZAGOR.VT,p" $(DISTDIR_BIN)/djungel-zagor.vt
 	utils/makedisk.pl -o $(DISTNAME).d64 -w "DJUNGEL-ZAGOR.P,p" $(DISTDIR_BIN)/djungel-zagor.p.prg
