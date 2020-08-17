@@ -1,0 +1,100 @@
+TODO for victracker
+$Id: TODO.txt,v 1.90 2003/12/21 12:44:27 tlr Exp $
+
+General:
+  - Fine tune make system, make dist should build binaries aswell.
+  - better documentation
+  - more demo songs
+  - zip archive should contain the directory listing of the d64 as a file.
+    (a dir option to makedisk.pl?)
+
+Player:
+
+  - fix handling of sound referenced arpeggios, offset and glide
+    in combination with delay note (doesn't seem to be a problem.)
+  - how to handle an arpeggio that gets introduced during a tie?
+  - how to handle an arpeggio that gets changed?
+  - make tempo set only the low nybble of the speed, and make a special
+    command to set the high nybble.
+
+  optimize:
+  - tidy up optimizations that make use of arpeggio modes.
+    Maybe by adding PL_SUPPORT_ARPMODExx_ONLY, etc...
+  - optimize the patternlist.
+  - optimize a lot!  Initial frequency offset takes a lot of time!
+    portamento shift could be calculated once.
+  - Oneshot support / make oneshot happen at the right moment.
+  - extremely simplified version of player.
+  - <1Kb player?
+
+  - special effects suited for the volume/tempo channel
+  - special effects suited for the noise channel
+
+  (- implement mode 2 arpeggios.)
+  (- selectable scales?)
+  (- Emulation of NTSC on PAL machines and vice versa.)
+  (- effect: vibrato)
+  (- sound param: vibrato.)
+  (- sound param: vibrato delay?)
+  (- player with some kind of pitch correction?)
+  (- player with PWM?)
+
+Packer:
+  - win32 version?  (=autoconf/mingw32)
+  - handle calling of perl and shell stuff in a better way!
+    i.e remove the sed and cat stuff.
+  - should have a switch to output a song binary at a special location.
+  - should really know where to find its own files runner.asm and player.asm
+  - Debug mode for runner.asm  (enabled by a switch)
+  - runner.asm should calculate rasterlines including LSB.
+  - fix bug that makes the empty pattern doubled
+    it seems that it is due to that the empty pattern is used both
+    in the voices, and in the noise channel.
+  - duplicate pattern removal.
+  - duplicate pattlist removal.
+  - possibility to save an optimized song (for testing purposes).
+  - Put loads of status info in the assembly output.
+  - packer optimization by splitting in to more patterns.
+  - maybe parse output from dasm?
+
+Editor:
+  - editable/displayable author information.
+  - SHIFT/C= should be disabled
+  - selectable noninv/inv sync-mode.
+  - clean up sync24 code.  Check for bad lock up bugs!
+  - clean up and comment code.  Especially the editor code.
+  - refactor player flags.
+  - Go to main screen when loading or initializing song.
+  - improve the transpose functionality.
+  - Make ( <- ) not advance down.
+  - selectable device number?
+  - tape load/save... i.e make it work with cbmlink
+  - function to renumber patterns
+  - add edit functionality for oneshot.
+    (done, but isn't supported by the player)
+  - copy/paste in patternlist?  This will not happen until we unify the
+    copy/cut/paste/ins/del/clr logic in editor.asm.
+  - inst/del in patternedit?  This will not happen until we unify the
+    copy/cut/paste/ins/del/clr logic in editor.asm.
+  - Play start shall be done such that the PlayColor1 bar shall be the
+    first fetch.
+  - Why does the editor hang when loading a 12Kb module?
+    (Is something used high in mem?)
+
+  (- selectable scales?  Custom scale editor.)
+  (- convert text to screen codes in a better way.)
+  (- make a more efficient diskformat. RLE)
+  (- more compact memory layout for the song data to be able to use more
+    code in the editor.  (maybe dynamic with garbage collect))
+  (- names for patterns?)
+
+Intro:
+  - Change the logo?
+  (- Make it work for both NTSC and PAL.)
+
+Utils:
+  - makedisk.pl: should really have more error check.
+  - makedisk.pl: refactor!!!
+
+eof
+

@@ -1,0 +1,127 @@
+
+***Pattlist pack:
+
+  0 p p p p p p p  - Play pattern 'p'
+  1 0 t t t t t t  - Play following pattern for time 't'
+  1 1 x x x x x x  - Repeat song to index 'x'
+  1 1 1 1 1 1 1 1  - End of song
+
+  c c
+
+How to decode:
+
+CodeByte
+
+    c c
+----------------------------------
+    0 x   PA=CB&$7f
+    1 0   PA=DT+1
+    1 1   Special
+-----------------------------------
+
+How to encode:
+
+last state   Read 0                        possible code      state
+-------------------------------------------------------------------
+ 16          TRUE                              0x & 10          0
+
+
+last state   Read 1                        possible code      state
+-------------------------------------------------------------------
+ 0           PA=PA-1                           10              0+8
+ 0           PA!=PA-1                          0x              1+8
+
+
+last state   Read >1                       possible code      state
+-------------------------------------------------------------------
+ 0+8         PA=PA-1                           10              0+8
+ 1+8         PA!=PA-1                          0x              1+8
+
+
+default:
+   state 16, read=0
+
+
+
+***Pattern pack:
+
+codebyte:
+	m c c t t t t t
+
+m - MULTIBIT
+  Selects if following data should be held for the time specified or
+  if new data should be fetched until time 't' runs out.
+
+c - TYPE
+  00 - param=0, pitch=0, for time 't' (MULTIBIT is not used for this type)
+  01 - pitch is fetched, param=0 and set for time 't'
+  10 - pitch=$80, param is fetched and set for time 't'
+  11 - pitch and param is fetched and set for time 't'
+
+t - TIME
+  range $00-$1f
+  $00 means a new codebyte is fetched next timeframe
+  $01 means wait one extra timeframe
+  etc....
+
+
+Specials: (codebyte %100xxxxx)
+
+ %10000000 - END  (end of pattern)
+
+
+
+------------------------------------------
+
+
+
+How to decode:
+
+CodeByte
+
+MU  c c
+----------------------------------
+ 0  0 0   PI=$00      PA=$00
+ 0  0 1   PI=DT       PA=$00
+ 0  1 0   PI=$80      PA=DT
+ 0  1 1   PI=DT       PA=DT+1
+ 1  0 0   Special
+ 1  0 1   PI=DT[t]    PA=$00
+ 1  1 0   PI=$80      PA=DT[t]
+ 1  1 1   PI=DT[t*2]  PA=DT[t*2+1]
+-----------------------------------
+
+
+How to encode:
+
+last state   Read 0                        possible code      state
+-------------------------------------------------------------------
+ 16          PI=$00   &  PA=$00                000              0
+ 16          PI=$xx   &  PA=$00                001 & 101        1
+ 16          PI=$80   &  PA=$xx                010 & 110        2
+ 16          PI=$xx   &  PA=$xx (else)         011 & 111        3
+
+
+last state   Read 1                        possible code      state
+-------------------------------------------------------------------
+ 0           PI=$00   &  PA=$00                000              0+8
+ 1           PI=PI-1  &  PA=$00                001              1+8
+ 1           PI!=PI-1 &  PA=$00                101              5+8
+ 2           PI=$80   &  PA=PA-1               010              2+8
+ 2           PI=$80   &  PA!=PA-1              110              6+8
+ 3           PI=PI-1  &  PA=PA-1               011              3+8
+ 3           PI!=PI-1 |  PA!=PA-1              111              7+8
+
+last state   Read >1                       possible code      state
+-------------------------------------------------------------------
+ 0+8         PI=$00   &  PA=$00                000              0+8
+ 1+8         PI=PI-1  &  PA=$00                001              1+8
+ 2+8         PI=$80   &  PA=PA-1               010              2+8
+ 3+8         PI=PI-1  &  PA=PA-1               011              3+8
+ 5+8         PI!=PI-1 &  PA=$00                101              5+8
+ 6+8         PI=$80   &  PA!=PA-1              110              6+8
+ 7+8         PI!=PI-1 &  PA!=PA-1              111              7+8
+
+default:
+   state 16, read=0
+

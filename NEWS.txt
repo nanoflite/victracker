@@ -1,0 +1,89 @@
+victracker NEWS -- history of user-visible changes.  2004-10-02
+
+Please send victracker bug reports to <daniel@kahlin.net>.
+
+Version 2.0
+
+* SYNC24/SYNC48 support.  You may now sync vic-tracker to an external
+  sequencer/synthesizer/drum machine.
+
+* (SHIFT-)INST/DEL inserts and deletes in the patternlist.
+
+* SHIFT-CLR/HOME clears the current pattern. (After asking)
+
+* Songs may have a repeat step that is different from the start step.
+
+* Rastertime display may be toggled on/off (V).
+
+* Multispeed player, 1x, 2x, 3x & 4x interrupt speeds.
+
+* Sanity checks have been implemented in many places.
+
+* Patterns may be transposed up/down in the pattern editor (C= T, C= Y)
+
+* Arpeggio modes 0, 1 and f are implemented correctly.
+
+* A default arpeggio may be set up in the sound.
+
+* A frequency offset may be set up in the sound definition.
+
+* A default glide may be set up in the sound definition.
+
+* Cut and paste in pattern editor.
+
+* The current pattern may be changed from within the pattern editor.
+
+* The patternlist row that is to be edited may be changed from within the
+  pattern editor. (C= N, C= M)
+
+* Sounds may have length.
+
+* New player effect Set Flag.
+
+* New player effect Cut Note.
+
+* New player effect Delay Note.
+
+* The pattern list has a new column allowing the length of the patterns
+  to be selected per row in the pattern list.
+
+* Arpeggios may now have up to 16 steps, and have their speed, length,
+  and repeat position individually configurable.
+
+* Sounds may be edited.
+
+* Support for both NTSC and PAL interrupt speeds.
+
+* Support for up to 16 different songs in each module. 
+  (different StartStep, EndStep and StartSpeed for each)
+
+* Pressing C= Q,W,E,R toggles voice 1-4 on and off.
+
+* Error check during load and save.
+
+* Loaded songs are padded with zeroes during load.
+
+* Pressing '<-' in the pattlist editor enters the first unused pattern
+
+* Empty notes (00) in patterns now show '--' and continuation notes (80)
+  show '++'.
+
+* SPACE enters an empty value, and moves down.
+
+* SHIFT-SPACE enters a continuation note in the note field.
+
+* The editor cursor is blanked when input is required in the status field
+
+* The cursor is positioned on the same voice when switching between the
+  pattern editor and the pattern list editor.
+
+* completely new directory structure
+
+Version 1.0
+
+* Initial release.
+
+Version 0.6
+
+* Preliminary version.
+

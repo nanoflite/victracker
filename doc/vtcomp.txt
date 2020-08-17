@@ -1,0 +1,68 @@
+vtcomp - a song compiler/compressor for victracker modules.
+
+DESCRIPTION
+  vtcomp compresses the module files (.vt) created using vic-tracker
+for the Commodore vic-20 computer.  It creates an assembly language
+source file which contains the compressed music data, and the player
+code optimized specifically for this particular music.
+The output is suitable for use in demos or games, both for unexpanded
+and expanded vic-20s.  I addition, because you have the source code
+you may move things around and do additional optimizations to suit your
+special application.
+
+OPTIMIZATIONS
+  The size of the generated code/data greatly depends on the number of
+patterns used, which effects where used, and so on...
+
+The demo songs vary between (2003-08-27)
+  mystic.vt        $419 bytes - only portamento.
+  blippblopp.vt    $423 bytes - this uses only sound activated
+                                arpeggios.
+  vt-theme.vt      $71e bytes - this uses pretty much everything.
+  slowride.vt      $76c bytes - pretty much everything in this one too.
+  djungel-zagor.vt $86a bytes - multiple songs, portamento and arpeggios.
+
+The demo songs vary between (2003-08-26)
+  mystic.vt        $44e bytes - only portamento.
+  blippblopp.vt    $45e bytes - this uses only sound activated
+                                arpeggios.
+  vt-theme.vt      $723 bytes - this uses pretty much everything.
+  slowride.vt      $771 bytes - pretty much everything in this one too.
+  djungel-zagor.vt $86f bytes - multiple songs, portamento and arpeggios.
+
+HINTS
+If you do not use any arpeggios, roughly xx bytes will be saved.
+If you do not use any portamento, roughly xx bytes will be saved.
+If you do not use the volume channel, roughly xx bytes will be saved.
+
+USAGE
+
+usage: vtcomp [OPTION]... <infile> <outfile>
+
+Valid options:
+    -t <title>      set/override the module title field
+    -a <author>     set/override the module author field
+    -y <year>       set/override the module year field
+    -p              pack <infile> to <outfile>
+    -c              convert <infile> to the current format
+    -o              optimize <infile> and write to <outfile>
+    -L <path>       library path (to find runner.asm and player.asm)
+    -v              be verbose
+    -d <level>      output a lot of (weird) debugging information
+    -v              be verbose
+    -h              displays this help text
+    -V              output program version
+
+REQUIREMENTS
+  vtcomp should compile on any unix-like system, just type 'make' (or 'gmake'
+on some systems)
+If there is enough demand I might consider porting it to Win32 aswell.
+vtcomp will require that you have perl and sed installed (nearly every unix
+system will have it).  It will also require that you have dasm-2.12.04
+installed somewhere in your path.
+
+APPENDIX
+  See the file algorithm.txt for some details about the compressed format.
+(this file is rather unorganized)
+
+/Daniel Kahlin <daniel@kahlin.net>

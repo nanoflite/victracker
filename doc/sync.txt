@@ -1,0 +1,72 @@
+sync.txt
+Written by Daniel Kahlin <daniel@kahlin.net>
+$Id: sync.txt,v 1.2 2004/10/03 16:12:34 tlr Exp $
+
+NOTE: (*) marks a feature that is not yet implemented!
+
+##########################################################################
+  SYNCHRONIZATION
+##########################################################################
+
+##########################################################################
+  HARDWARE
+##########################################################################
+
+Sync24/Sync48/DIN-Sync
+----------------------
+
+Connector, all voltages are 5v.
+
+Pin 1 Start/Stop 
+Pin 2 GND
+Pin 3 Clock
+Pin 4 Reset/Start (*)
+Pin 5 Fillin/Continue (*)
+(*) Not used with vic-tracker.
+
+The DIN-Sync Start/Stop line is high when it wishes to send out a "Start"
+and low when it wishes to send out a "Stop".  The actual start or stop
+does not happen until the next clock occurs.
+Clocks come in at 24 ppqn (48 ppqn for Korg equipment).
+
+Interface 1
+-----------
+This interface is the simplest (just a cable), but works only together
+with VIC-20 computers.
+
+VIC-20                         SYNC24, DINSYNC
+
+GND        (A)  <----------->  GND        (2)
+
+CB1        (B)  <---+--------  Clock      (3)
+                    |
+PB0        (C)  <---+
+
+PB5        (J)  <------------  Start/Stop (1)
+
+
+Interface 2 (*)
+---------------
+This interface is able to work with both VIC-20 and C64 computers.
+
+VIC-20/C64                        SYNC24, DINSYNC
+
+GND        (A)  <-------------->  GND        (2)
+                        /| IC1b
+CB1/FLAG2* (B)  <---+--o |------  Clock      (3)
+                    |   \|
+PB0/PB0    (C)  <---+
+                        /| IC1a
+PB5/PB5    (J)  <------o |------  Start/Stop (1)
+                        \|
+
+MIDI Clock (*)
+--------------
+MIDI Start
+MIDI Continue
+MIDI Stop
+MIDI Clock            (24 ppqn)
+Song Pointer position (resolution of 6 ticks)
+
+# eof
+
