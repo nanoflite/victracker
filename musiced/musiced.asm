@@ -10,7 +10,19 @@
 ;*   Commodore Vic20.  Atleast 16KB memory required!
 ;*
 ;******
-	PROCESSOR 6502
+
+
+RELDATE EQU "2020-06-09"
+VERSION EQU "2.0"
+
+
+; DPACKAGE="victracker" -DVERSION="2.0" -DRELDATE="2004-10-02" 
+;
+RELYEAR EQU "2004-10-02" 
+VERSION_MAJOR EQU 2
+VERSION_MINOR EQU 2
+
+  PROCESSOR 6502
 
 	include "../include/macros.i"
 	include	"../include/vic20.i"

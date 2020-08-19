@@ -9,7 +9,10 @@
 ;*   This is the sysline
 ;*
 ;******
-	PROCESSOR 6502
+
+RELYEAR EQU "2004-10-02" 
+
+  PROCESSOR 6502
 	include "include/macros.i"
 	include "include/vic20.i"
 	
