@@ -1,0 +1,28 @@
+NAME := blippblopp
+PRG := $(NAME)_runner.prg
+LIBPATH := .
+
+AS := ca65
+AFLAGS := -I$(LIBPATH)/inc
+CC := cc65
+LD := cl65 -Ln $(NAME)_runner.lbl
+
+VIC := xvic -autostart-delay 100 -memory 16k
+CPU := 6502
+CFG := $(LIBPATH)/vic20-16k-asm.cfg
+TARGET := vic20
+
+.PHONY: all run clean
+
+all: $(PRG)
+
+$(PRG): *.s
+	$(AS) $(AFLAGS) --cpu $(CPU) $(NAME).s
+	$(AS) $(AFLAGS) --cpu $(CPU) -DLENGTH=`wc -c < $(NAME).o | tr -d ' '` $(NAME)_runner.s
+	$(LD) -t $(TARGET) -C $(CFG) -o $(PRG) $(NAME)_runner.o $(NAME).o
+
+run: all
+	$(VIC) $(PRG)
+
+clean:
+	-rm -rf *.o $(PRG) $(NAME).s $(NAME)_runner.s $(NAME)_runner.lbl

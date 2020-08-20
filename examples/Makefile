@@ -10,6 +10,14 @@
 #
 ######
 
+ifeq ($(CA65),true)
+	FLAG := -C
+	EXT := s
+else
+	FLAG :=
+	EXT := asm
+endif
+
 PACKAGE_ROOT=..
 include	$(PACKAGE_ROOT)/package.mk
 include	$(PACKAGE_ROOT)/common.mk
@@ -21,35 +29,35 @@ SHELL = /bin/sh
 #    DO NOT MODIFY ANYTHING AFTER THIS LINE    #
 ################################################
 
-all::	djungel-zagor.asm mystic.asm blippblopp.asm slowride.asm \
-	vt-theme.asm
+all::	djungel-zagor.$(EXT) mystic.$(EXT) blippblopp.$(EXT) slowride.$(EXT) \
+	vt-theme.$(EXT)
 
 
-djungel-zagor.asm:	djungel-zagor.vt
-	../vtcomp/vtcomp -L ../vtcomp $< $@
-mystic.asm:	mystic.vt
-	../vtcomp/vtcomp -L ../vtcomp $< $@
-blippblopp.asm:	blippblopp.vt
-	../vtcomp/vtcomp -L ../vtcomp $< $@
-slowride.asm:	slowride.vt
-	../vtcomp/vtcomp -L ../vtcomp $< $@
-vt-theme.asm:	vt-theme.vt
-	../vtcomp/vtcomp -L ../vtcomp $< $@
+djungel-zagor.$(EXT):	djungel-zagor.vt
+	../vtcomp/vtcomp -L ../vtcomp $(FLAG) $< $@
+mystic.$(EXT):	mystic.vt
+	../vtcomp/vtcomp -L ../vtcomp $(FLAG) $< $@
+blippblopp.$(EXT):	blippblopp.vt
+	../vtcomp/vtcomp -L ../vtcomp $(FLAG) $< $@
+slowride.$(EXT):	slowride.vt
+	../vtcomp/vtcomp -L ../vtcomp $(FLAG) $< $@
+vt-theme.$(EXT):	vt-theme.vt
+	../vtcomp/vtcomp -L ../vtcomp $(FLAG) $< $@
 
 # build the distribution archive
 DISTDIR:=$(DISTDIR)/examples
 dist::	predist #subdirs
 	cp Makefile $(DISTDIR)
-	cp djungel-zagor.vt djungel-zagor.asm $(DISTDIR)
-	cp djungel-zagor_runner.asm djungel-zagor_runner.prg $(DISTDIR)
-	cp mystic.vt mystic.asm $(DISTDIR)
-	cp mystic_runner.asm mystic_runner.prg $(DISTDIR)
-	cp blippblopp.vt blippblopp.asm $(DISTDIR)
-	cp blippblopp_runner.asm blippblopp_runner.prg $(DISTDIR)
-	cp slowride.vt slowride.asm $(DISTDIR)
-	cp slowride_runner.asm slowride_runner.prg $(DISTDIR)
-	cp vt-theme.vt vt-theme.asm $(DISTDIR)
-	cp vt-theme_runner.asm vt-theme_runner.prg $(DISTDIR)
+	cp djungel-zagor.vt djungel-zagor.$(EXT) $(DISTDIR)
+	cp djungel-zagor_runner.$(EXT) djungel-zagor_runner.prg $(DISTDIR)
+	cp mystic.vt mystic.$(EXT) $(DISTDIR)
+	cp mystic_runner.$(EXT) mystic_runner.prg $(DISTDIR)
+	cp blippblopp.vt blippblopp.$(EXT) $(DISTDIR)
+	cp blippblopp_runner.$(EXT) blippblopp_runner.prg $(DISTDIR)
+	cp slowride.vt slowride.$(EXT) $(DISTDIR)
+	cp slowride_runner.$(EXT) slowride_runner.prg $(DISTDIR)
+	cp vt-theme.vt vt-theme.$(EXT) $(DISTDIR)
+	cp vt-theme_runner.$(EXT) vt-theme_runner.prg $(DISTDIR)
 predist::
 	mkdir $(DISTDIR)
 
@@ -61,5 +69,6 @@ clean::	#subdirs
 	rm -f slowride*.asm slowride*.prg
 	rm -f vt-theme*.asm vt-theme*.prg
 	rm -f *~ \#*\#
+	rm -f *.s *.o *.lbl
 
 # eof

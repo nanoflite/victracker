@@ -92,13 +92,13 @@ void panic (const char *str, ...)
  * Make assembly dc.b statements!
  *
  ******/
-void fdumpbytes(FILE *fp, u_int8_t *data, int num, int numperrow)
+void fdumpbytes(FILE *fp, u_int8_t *data, int num, int numperrow, char* dot_byte)
 {
     int	i;
 
     for	(i=0; i < num; i++) {
 	if ((i % numperrow)==0)
-	    fprintf(fp,"\tdc.b\t");
+	    fprintf(fp,"\t%s\t", dot_byte);
 	
 	if ((i % numperrow)!=numperrow-1 && i!=(num-1))
 	    fprintf(fp,"$%02x,",data[i]);
@@ -113,13 +113,13 @@ void fdumpbytes(FILE *fp, u_int8_t *data, int num, int numperrow)
  * Make assembly dc.b statements!
  *
  ******/
-void fdumplabels(FILE *fp, char *label, int num, int numperrow)
+void fdumplabels(FILE *fp, char *label, int num, int numperrow, char* dot_byte)
 {
     int	i;
 
     for (i=0; i < num; i++) {
 	if ((i % numperrow)==0)
-	    fprintf(fp,"\tdc.b\t");
+	    fprintf(fp,"\t%s\t", dot_byte);
 	
 	if ((i % numperrow)!=numperrow-1 && i!=(num-1))
 	    fprintf(fp,"%s%02x,",label,i);

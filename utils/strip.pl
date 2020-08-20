@@ -147,38 +147,52 @@ sub process_file
 
 	$output_inhibit=0;
 	if (!$empty_flag) {
-	    $mnemonic=(s/^\s+([a-zA-Z][a-zA-Z0-9\.]*)//)?$1:"";
+      if (/^\./) {
+	      $mnemonic=(s/^(\.[a-zA-Z][a-zA-Z0-9]*)//)?$1:"";
+      } else {
+	      $mnemonic=(s/^\s+([a-zA-Z][a-zA-Z0-9]*)//)?$1:"";
+      }
 	    $operand=(s/^\s+(.*?)\s*$//)?$1:"";
 
-	    if ($mnemonic eq "IF") {
+
+      # print "M: $mnemonic\n";
+      # print "O: $operand\n";
+
+
+	    if ($mnemonic eq "IF" || $mnemonic eq ".if") {
 		($debug_g) && print "found: IF\n";
 		# push undef on IF.
 		push @ifstack,undef;
-	    } elsif ($mnemonic eq "IFCONST" || $mnemonic eq "IFNCONST") {
+	    } elsif ($mnemonic eq "IFCONST" || $mnemonic eq "IFNCONST" || $mnemonic eq ".ifconst" || $mnemonic eq ".ifndef" || $mnemonic eq ".ifdef") {
 		($debug_g) && print "found: IF[N]CONST\n";
 		# if defined, push condition, else push undef.
 		if (defined $defines_g{$operand}) {
 		    if ($defines_g{$operand}) {
-			push @ifstack,($mnemonic eq "IFCONST");
+			push @ifstack,($mnemonic eq "IFCONST" || $mnemonic eq ".ifconst" || $mnemonic eq ".ifdef");
 		    } else {
-			push @ifstack,($mnemonic eq "IFNCONST");
+			push @ifstack,($mnemonic eq "IFNCONST" || $mnemonic eq ".ifndef");
 		    }
 		    ($debug_g) && print "found: $operand\n";
 		    $output_inhibit=1;
+        # print "INH\n";
 		} else {
 		    push @ifstack,undef;
 		}
-	    } elsif ($mnemonic eq "ELSE") {
+	    } elsif ($mnemonic eq "ELSE" || $mnemonic eq ".else") {
 		($debug_g) && print "found: ELSE\n";
 		# invert condition if defined
 		if (defined $ifstack[$#ifstack]) {
 		    $ifstack[$#ifstack]=!$ifstack[$#ifstack];
 		    $output_inhibit=1;
+
+        # print "INH\n";
 		}
-	    } elsif ($mnemonic eq "ENDIF" || $mnemonic eq "EIF") {
+	    } elsif ($mnemonic eq "ENDIF" || $mnemonic eq "EIF" || $mnemonic eq ".endif") {
 		($debug_g) && print "found: ENDIF\n";
 		if (defined $ifstack[$#ifstack]) {
 		    $output_inhibit=1;
+
+        # print "INH\n";
 		}
 		pop @ifstack;
 	    }

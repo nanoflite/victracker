@@ -81,6 +81,9 @@ char *title_g=NULL;
 char *year_g=NULL;
 char *libpath_g=".";
 
+char* dot_byte = "dc.b";
+int use_ca65 = 0;
+
 /*************************************************************************
  *
  * NAME  main()
@@ -116,7 +119,7 @@ int main(int argc, char *argv[])
     /*
      * scan for valid options
      */
-    while (EOF!=(c=getopt (argc, argv, "t:a:y:copL:vVhd:"))) {
+    while (EOF!=(c=getopt (argc, argv, "t:a:y:copL:vVhd:C"))) {
         switch (c) {
 	
 	/* a missing parameter */
@@ -162,6 +165,7 @@ PROGRAM " " PACKAGE_VER "\n"
 "    -v              be verbose\n"
 "    -h              displays this help text\n"
 "    -V              output program version\n"
+"    -C              use ca65 compatible output\n"
 "\n"
 "Examples:\n"
 "    vtcomp -c -t \"rocks!\" -a \"daniel kahlin\" old.vt uptodate.vt\n"
@@ -203,6 +207,12 @@ PROGRAM " " PACKAGE_VER "\n"
 	case 'L':
 	    libpath_g=optarg;
 	    break;
+
+  /* ca65 syntax */    
+  case 'C':
+      use_ca65 = 1;
+      dot_byte = ".byte";
+      break;
 
 	/* default behavior */
 	default:
@@ -330,7 +340,7 @@ int do_packing(char *loadname,char *savename)
 	dot=strrchr(mainname,'.');
 	if (dot) *dot=0;
 	snprintf(runnertmpname,256,"%s_runner.tmp",mainname);
-	snprintf(runnername,256,"%s_runner.asm",mainname);
+	snprintf(runnername,256,"%s_runner.%s",mainname, use_ca65 ? "s" : "asm");
 	snprintf(runnerbinname,256,"%s_runner.prg",mainname);
 
 	if (verbose_g)
@@ -340,7 +350,7 @@ int do_packing(char *loadname,char *savename)
 
 	if (verbose_g)
 	    printf("Created file '%s'.\n",savename);
-	systemf("cat %s/%s | sed 's/@FILE@/\"%s\\.asm\"/' | sed 's/@VERSION@/\"%s\"/' | sed 's/@NUMSONGS@/%d/' | sed 's/@TITLE@/\"%s\"/' | sed 's/@AUTHOR@/\"%s\"/' > %s",libpath_g,"runner.asm",mainname,VERSION,tune->SongNum,titlepad,authorpad,runnertmpname);
+	systemf("cat %s/%s | sed 's/@FILE@/\"%s\\.%s\"/' | sed 's/@VERSION@/\"%s\"/' | sed 's/@NUMSONGS@/%d/' | sed 's/@TITLE@/\"%s\"/' | sed 's/@AUTHOR@/\"%s\"/' > %s",libpath_g, use_ca65 ? "runner_ca65.s" : "runner.asm",mainname, use_ca65 ? "s" : "asm", VERSION,tune->SongNum,titlepad,authorpad,runnertmpname);
 
 	{
 	    int rn_vtcomp=1;
@@ -375,6 +385,10 @@ int do_packing(char *loadname,char *savename)
 		break;
 	    }
 
+    if (verbose_g) {
+      printf("RUN SPEEDS\n1: %d\n2: %d\n3: %d\n4: %d\n\n", rn_speed_1x, rn_speed_2x, rn_speed_3x, rn_speed_4x);
+    }
+
 	    systemf("../utils/strip.pl %s"
 		    "-%cRN_VTCOMP "
 		    "-%cRN_UNEXP "
@@ -397,10 +411,17 @@ int do_packing(char *loadname,char *savename)
 	    );
 	    unlink(runnertmpname);
 	}
-	if (verbose_g)
+	if (verbose_g) {
 	    printf("Created file '%s'.\n",runnername);
-	systemf("dasm %s -o%s %s",runnername,runnerbinname,(verbose_g)?"":"> /dev/null");
-	if (!exists_nonzero(runnerbinname)) {
+  }
+
+  if (use_ca65) {
+    systemf("make -f %s/Makefile.ca65 LIBPATH=%s NAME=%s %s",libpath_g, libpath_g, mainname,(verbose_g)?"":"> /dev/null");
+  } else {
+    systemf("dasm %s -o%s %s",runnername,runnerbinname,(verbose_g)?"":"> /dev/null");
+  }
+
+  if (!exists_nonzero(runnerbinname)) {
 	    unlink(runnerbinname);
 	    panic("dasm created an empty output file");
 	}
@@ -1050,7 +1071,7 @@ void ConvertTune(char *filename,struct Tune *tune)
 		 "-%cPL_OPTIMIZE_ONE "
 		 "-%cPL_SUPPORT_VOLVOICE "
 		 "-o %s %s/%s",
-	    (debug_g)?"-v ":"",
+	    (debug_g)?"-v -d ":"",
             (pl_vtcomp)?'D':'U',
             (pl_userflag)?'D':'U',
             (pl_arpeggios)?'D':'U',
@@ -1074,7 +1095,7 @@ void ConvertTune(char *filename,struct Tune *tune)
 	    (pl_volvoice)?'D':'U',
 	    filename,
 	    libpath_g,
-	    "player.asm"
+	    use_ca65 ? "player_ca65.s" : "player.asm"
 	);
     }
     if (!(fp=fopen(filename,"a")))
@@ -1112,23 +1133,23 @@ void ConvertTune(char *filename,struct Tune *tune)
 /* generate general configuration data */
     fprintf(fp,"pl_SongSpeed:\n");
     for (i=0; i<tune->SongNum; i++) {
-        fprintf(fp,"\tdc.b\t$%02x\n",tune->SongDef[i].StartSpeed & TUNE_SPEED_MASK);
+        fprintf(fp,"\t%s\t$%02x\n",dot_byte, tune->SongDef[i].StartSpeed & TUNE_SPEED_MASK);
     }
     if (tune->SongNum>1) {
         fprintf(fp,"pl_SongLow:\n");
 	for (i=0; i<tune->SongNum; i++) {
  	    if (uses_volvoice) {
-	        fprintf(fp,"\tdc.b\t<pl_Tab1_%d,<pl_Tab2_%d,<pl_Tab3_%d,<pl_Tab4_%d,<pl_Tab5_%d\n",i,i,i,i,i);
+	        fprintf(fp,"\t%s\t<pl_Tab1_%d,<pl_Tab2_%d,<pl_Tab3_%d,<pl_Tab4_%d,<pl_Tab5_%d\n",dot_byte,i,i,i,i,i);
 	    } else {
-	        fprintf(fp,"\tdc.b\t<pl_Tab1_%d,<pl_Tab2_%d,<pl_Tab3_%d,<pl_Tab4_%d\n",i,i,i,i);
+	        fprintf(fp,"\t%s\t<pl_Tab1_%d,<pl_Tab2_%d,<pl_Tab3_%d,<pl_Tab4_%d\n",dot_byte,i,i,i,i);
 	    }
 	}
 	fprintf(fp,"pl_SongHigh:\n");
 	for (i=0; i<tune->SongNum; i++) {
  	    if (uses_volvoice) {
-	        fprintf(fp,"\tdc.b\t>pl_Tab1_%d,>pl_Tab2_%d,>pl_Tab3_%d,>pl_Tab4_%d,>pl_Tab5_%d\n",i,i,i,i,i);
+	        fprintf(fp,"\t%s\t>pl_Tab1_%d,>pl_Tab2_%d,>pl_Tab3_%d,>pl_Tab4_%d,>pl_Tab5_%d\n",dot_byte,i,i,i,i,i);
 	    } else {
-	        fprintf(fp,"\tdc.b\t>pl_Tab1_%d,>pl_Tab2_%d,>pl_Tab3_%d,>pl_Tab4_%d\n",i,i,i,i);
+	        fprintf(fp,"\t%s\t>pl_Tab1_%d,>pl_Tab2_%d,>pl_Tab3_%d,>pl_Tab4_%d\n",dot_byte,i,i,i,i);
 	    }
 	}
     }
@@ -1140,7 +1161,8 @@ void ConvertTune(char *filename,struct Tune *tune)
 	    fdumpbytes(fp,
 		       (u_int8_t *)&newtune->Sound[i],
 		       4,
-		       16
+		       16,
+           dot_byte
 		       );
 	}
     }
@@ -1149,7 +1171,7 @@ void ConvertTune(char *filename,struct Tune *tune)
     /*if (arpnum)*/ {
         fprintf(fp,"pl_ArpeggioIndex:\n");
 	for (i=0; i < arpnum; i++) {
-	    fprintf(fp,"\tdc.b\tpl_Arp%02x-pl_Arpeggios\n",i);
+	    fprintf(fp,"\t%s\tpl_Arp%02x-pl_Arpeggios\n",dot_byte,i);
 	}
 
         fprintf(fp,"pl_Arpeggios:\n");
@@ -1158,13 +1180,14 @@ void ConvertTune(char *filename,struct Tune *tune)
 	    fdumpbytes(fp,
 		       (u_int8_t *)&newtune->Arpeggio[i],
 		       (newtune->ArpeggioConf[i].Data[1]&0x0f)+1,
-		       16
+		       16,
+           dot_byte
 		       );
 	}
 
 	fprintf(fp,"pl_ArpeggioConf:\n");
 	for (i=0; i < arpnum; i++) {
-	    fdumpbytes(fp,(u_int8_t *)&newtune->ArpeggioConf[i],2,2);
+	    fdumpbytes(fp,(u_int8_t *)&newtune->ArpeggioConf[i],2,2, dot_byte);
 	}
     }
 
@@ -1193,9 +1216,9 @@ void ConvertTune(char *filename,struct Tune *tune)
     }
 
     fprintf(fp,"pl_PatternsLow:\n");
-    fdumplabels(fp,"<pl_Patt",pattnum,5);
+    fdumplabels(fp,"<pl_Patt",pattnum,5, dot_byte);
     fprintf(fp,"pl_PatternsHigh:\n");
-    fdumplabels(fp,">pl_Patt",pattnum,5);
+    fdumplabels(fp,">pl_Patt",pattnum,5, dot_byte);
 
 /* Generate patterns */
     for (i=0; i < pattnum; i++) {
@@ -1315,7 +1338,7 @@ void PackPattlist(FILE *fp, struct Tab *tab, u_int8_t startstep, u_int8_t endste
     } else {
         pattlistbuffer[index++]=0xff; /* END OF SONG marker */
     }
-    fdumpbytes(fp,pattlistbuffer,index,16);
+    fdumpbytes(fp,pattlistbuffer,index,16, dot_byte);
 
     len=UnpackPattlist(fp,pattlistbuffer,pattlistbuffer2);
 
@@ -1541,7 +1564,7 @@ void PackPattern(FILE *fp, struct Pattern *pattern, int pattlen)
     }
 
 
-    fdumpbytes(fp,patternbuffer,index,16);
+    fdumpbytes(fp,patternbuffer,index,16, dot_byte);
 
     len=UnpackPattern(fp,patternbuffer,patternbuffer2);
 

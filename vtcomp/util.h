@@ -17,8 +17,8 @@
 void warning(const char *str, ...);
 void panic(const char *str, ...);
 
-void fdumpbytes(FILE *fp, u_int8_t *data, int num, int numperrow);
-void fdumplabels(FILE *fp, char *label, int num, int numperrow);
+void fdumpbytes(FILE *fp, u_int8_t *data, int num, int numperrow, char* dot_byte);
+void fdumplabels(FILE *fp, char *label, int num, int numperrow, char* dot_byte);
 
 void to_petscii (char *str);
 void from_petscii (char *str);

@@ -28,9 +28,6 @@ vtcomp:	vtcomp.o util.o
 vtcomp.o:	vtcomp.c tune.h util.h vtcomp.h
 util.o:		util.c util.h vtcomp.h
 
-player.asm:	../musiced/player.asm
-	../utils/strip.pl -D PL_PACKED -o $@ $<
-
 # build the distribution archive
 DISTDIR:=$(DISTDIR)/vtcomp
 dist::	predist player.asm #subdirs
