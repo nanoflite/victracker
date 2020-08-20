@@ -1,3 +1,22 @@
+# victracker - a musical composition tool for the Commodore vic-20 computer.
+
+This is a port of victracker from DASM to CA65.
+
+## State of the port
+
+  * [x] player
+  * [x] runner
+  * [x] vtcomp
+  * [ ] editor
+
+## Notes
+
+  * I added an extra command option `-C` to `vtcomp`, which will target ca65.
+  * The length of the tune is reported wrong, the generated object file, from which the size gets taken is much larger then the resulting code in the prg.
+
+## Original README.txt
+
+```
 victracker - a musical composition tool for the Commodore vic-20 computer.
 
 victracker is a tracker-style music editor for the Commodore vic-20.  A song
@@ -26,3 +45,4 @@ use Over5 (by Daniel Kahlin).
 These utilities can be found at http://www.kahlin.net/daniel/over5/
 
 /Daniel Kahlin <daniel@kahlin.net>
+```
